@@ -38,7 +38,7 @@
  **猫王蓝牙音箱**   
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0524/104605_3b1116be_1899542.jpeg "300-猫王收音机.jpg")
 
- **花生壳盒子**   
+ **向日葵控控**   
 ![输入图片说明](https://images.gitee.com/uploads/images/2019/0524/104631_a035813f_1899542.png "200-400花生壳盒子.png")
 
  **码云巨型鼠标垫**   
@@ -73,7 +73,7 @@
  **每周** 周五下午18:00 在本周推出的五个作品中评论人数最多的作品将获得 **码云巨型鼠标垫** 一份。（ **越早投稿获奖机会越大喔～** ）
   
   
- **截止到6月28日18:00** ，评论人数最多的作品将获得 **猫王收音机+花生壳盒子** 一份。
+ **截止到6月28日18:00** ，评论人数最多的作品将获得 **猫王收音机+向日葵控控** 一份。
 
 
   
@@ -151,7 +151,7 @@
   
 同时再次恭喜本周评论人数最多的作品 [手机号码验证](https://gitee.com/oschina/bullshit-codes/blob/master/java/PhoneRuleValidate.java)  获得  **码云巨型鼠标垫**  
   
-最后恭喜本次坑爹代码大赛活动评论人数最多作品 [大神留步，帮我看个问题](https://gitee.com/oschina/bullshit-codes/blob/master/java/BadCode.java) 喜提 **猫王收音机+花生壳盒子**  
+最后恭喜本次坑爹代码大赛活动评论人数最多作品 [大神留步，帮我看个问题](https://gitee.com/oschina/bullshit-codes/blob/master/java/BadCode.java) 喜提 **猫王收音机+向日葵控控**  
   
 【评论区开奖】
 
