@@ -1,0 +1,212 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"mybatis-3-mapper.dtd">
+<mapper namespace="com.orm.Rank.RankMapper">
+	<!--获取综合排名的列表(积分排名)  -->
+	<select id="rankByAll">
+		select * into ##rank
+		from(
+		select TOP 100 PERCENT
+		ranknum=ROW_NUMBER() over(order by
+		SUM(usertestpoint)
+		desc),uts.userid
+		as userid,
+		(
+		select
+		case
+		when u.uName is null then
+		substring(u.umodie,0,4)+'****'+substring(u.umodie,8,len(u.umodie))
+		else u.uName
+		end 'uName'
+		from
+		dbo.userinfos u where
+		uid=userid
+		)as
+		username
+		,(select SUM(usertestpoint) from dbo.usetestscore u where
+		u.userid=uts.userid)as
+		score,COUNT(*)as
+		alltestcount,
+		(select
+		SUM(testcount) as allcount from
+		dbo.usertest as ut
+		where
+		ut.userid=uts.userid and ut.testtype!=3
+		group by
+		userid )as
+		allquestioncount,(select SUM(usererror) from dbo.usetestscore u where
+		u.userid=uts.userid)as allerror,round((select
+		((CAST(((select
+		SUM(testcount) as allcount from dbo.usertest
+		as ut where
+		ut.userid=uts.userid and ut.testtype!=3
+		group by userid
+		)) as FLOAT)-
+		(select SUM(usererror) from dbo.usetestscore u where
+		u.userid=uts.userid and u.testtype!=3))/(select SUM(testcount) as
+		allcount from
+		dbo.usertest
+		as ut where
+		ut.userid=uts.userid and
+		ut.testtype!=3
+		group by
+		userid
+		))*100),2)as practice,(select
+		sum(employtime) from
+		dbo.usetestscore u where u.userid=uts.userid) as
+		time from
+		dbo.usetestscore uts where uts.testtype!=3
+		group by
+		userid
+		order by
+		score desc) rank
+	</select>
+
+	<!--获取测试排名中的列表 -->
+	<select id="rankByTest">
+		select * into ##rank
+		from(
+		select TOP 100 PERCENT
+		ranknum=ROW_NUMBER() over(order by
+		SUM(usertestpoint)
+		desc),uts.userid
+		as userid,(select
+		u.uName
+		from
+		dbo.userinfos u where
+		uid=userid)as
+		username,(select SUM(usertestpoint) from dbo.usetestscore u where
+		u.userid=uts.userid)as
+		score,COUNT(*)as
+		alltestcount,
+		(select
+		t.truequecount as truecount from dbo.trainingannal t
+		where
+		t.userid=uts.userid
+		group by
+		truequecount )as
+		allquestioncount,(select
+		SUM(usererror) from dbo.usetestscore u where
+		u.userid=uts.userid)as
+		allerror,round((select
+		((CAST(((select t.truequeexact as truecount from
+		dbo.trainingannal t
+		where t.userid=uts.userid
+		group by truequeexact
+		)) as
+		FLOAT))/(select truequecount as allcount
+		from dbo.trainingannal t where
+		t.userid=uts.userid
+		group by
+		truequecount
+		))*100),2)as practice,(select
+		sum(employtime) from
+		dbo.usetestscore u
+		where u.userid=uts.userid) as
+		time from
+		dbo.usetestscore uts where
+		uts.testtype=3
+		group by
+		userid order
+		by
+		score
+		desc) rank
+	</select>
+
+	<!--获取综合排行榜的前十名 -->
+	<select id="findTop10ByAll" resultType="map">
+		select top 10
+		userid,username,sum(score) as
+		score,alltestcount,allquestioncount,allerror,practice from ##rank
+		group
+		by
+		userid,username,alltestcount,allquestioncount,allerror,practice order
+		by score desc
+		
+	</select>
+
+	<!--获取正确率排行榜的前十名 -->
+	<select id="findTop10ByPractice" resultType="map">
+		select top 10
+		ranknum=row_number()over(order by practice
+		desc),userid,username,sum(score) as
+		score,alltestcount,allquestioncount,allerror,practice
+		from ##rank group
+		by
+		userid,username,alltestcount,allquestioncount,allerror,practice
+		order
+		by practice desc
+	</select>
+
+	<!--获取测试排行榜的前十名 -->
+	<select id="findTop10ByTest" resultType="map">
+		select top 10
+		userid,username,sum(score) as
+		score,alltestcount,allquestioncount,allerror,practice from ##rank
+		group
+		by
+		userid,username,alltestcount,allquestioncount,allerror,practice
+	</select>
+
+	<!--获取当前用户在综合排行榜的排行信息
+		userid:用户id
+	 -->
+	<select id="findMyRankInfoByAll" resultType="map" parameterType="Integer">
+		select sum(employtime) as '总练习时长',COUNT(1) as '总次数',
+		sum(usertest.testcount) as
+		'总题',sum(usetestscore.usererror) as '错题'
+		from usetestscore,usertest where usetestscore.userid =#{userid}
+		and
+		usertest.id = usetestscore.testid
+	
+	
+			
+	</select>
+
+	<!--获取当前用户在精确率排行榜的排行信息
+		userid:用户id
+	 -->
+	<select id="findMyRankInfoByPractice" resultType="map"
+		parameterType="Integer">
+		select
+		ranknum=row_number()over(order by practice
+		desc),userid,username,sum(score) as
+		score,alltestcount,allquestioncount,allerror,practice
+		from ##rank
+		where
+		userid=#{userid} group
+		by
+		userid,username,alltestcount,allquestioncount,allerror,practice
+		order
+		by practice desc
+	</select>
+
+	<!--获取当前用户在测试排行榜的排行信息
+		userid:用户id
+	 -->
+	<select id="findMyRankInfoByTest" resultType="map"
+		parameterType="Integer">
+		select ranknum,userid,username,sum(score) as
+		score,alltestcount,allquestioncount,allerror,practice
+		from ##rank
+		where
+		userid=#{userid} group
+		by
+		userid,username,alltestcount,allquestioncount,allerror,practice,ranknum
+	</select>
+
+	<!--获取当前用户在综合排行榜的排行信息
+		userid:用户id
+	 -->
+	<select id="findMyRankInfoByScore" parameterType="Integer"
+		resultType="map">
+		select ranknum,allquestioncount,practice from ##rank where
+		userid=#{userid}
+	</select>
+
+	<!--删除当前排名占用的排名表
+	 -->
+	<select id="dropRankTable">
+		drop table ##rank
+	</select>
+</mapper>
+ 
