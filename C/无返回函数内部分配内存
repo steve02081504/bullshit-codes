@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 void test(char * P){
-    p = (char *)mallco(sizeof(char)*100);
+    p = (char *)malloc(sizeof(char)*100);
 }
 
 int main(){
